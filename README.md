@@ -144,8 +144,20 @@ y pulsa **Enter**.
 
 ---
 
+## 4. Dar permiso para ejecutar el instalador
 
-## 4. Ejecutar el instalador
+Escribe:
+
+```bash
+chmod +x instalar_COMUNDAW2.sh
+```
+
+y pulsa **Enter**.
+
+No debería aparecer ningún mensaje. Es normal.
+
+
+## 5. Ejecutar el instalador
 
 Ahora escribe:
 
