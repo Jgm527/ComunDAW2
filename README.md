@@ -1,324 +1,77 @@
-# 📁 Carpeta común DAW2
+# Carpeta común DAW2
 
-Este programa permite conectar el ordenador a la **carpeta común de DAW2** del servidor del aula.
+Estos instaladores conectan el ordenador a la carpeta compartida `comunDAW2` del servidor del aula (`192.168.2.21`).
 
-Una vez instalado, podrás acceder a la carpeta compartida igual que a cualquier otra carpeta de tu ordenador.
+| Sistema | Instalador | Acceso |
+|---|---|---|
+| Windows | `instalar_comunDAW2.bat` | Unidad `W:` |
+| Linux | `instalar_COMUNDAW2.sh` | `/mnt/comunDAW2` |
 
-La instalación solo hay que hacerla **una vez por ordenador**.
+No ejecutes el instalador de otro sistema operativo.
 
----
+## Requisitos
 
-## 📋 Requisitos
+- Estar conectado a la red del aula.
+- Que el servidor esté encendido.
+- Tener permisos de administrador en Windows o poder usar `sudo` en Linux.
 
-Antes de empezar:
+## Windows
 
-* El ordenador debe estar conectado a la **red del aula**.
-* El servidor debe estar encendido.
-* Necesitas permisos de administrador en el ordenador.
-* Descarga el instalador correspondiente a tu sistema operativo.
+1. Descarga `instalar_comunDAW2.bat`.
+2. Haz clic derecho en el archivo y selecciona **Ejecutar como administrador**.
+3. Acepta el aviso de Windows y espera a que termine.
+4. Abre el Explorador de archivos y entra en **Este equipo > W:**.
 
-Hay dos instaladores:
-
-| Sistema    | Archivo                  |
-| ---------- | ------------------------ |
-| 🪟 Windows | `instalar_COMUNDAW2.bat` |
-| 🐧 Linux   | `instalar_COMUNDAW2.sh`  |
-
-> ⚠️ **No ejecutes el instalador de otro sistema operativo.**
-
----
-
-# 🪟 Windows
-
-## 1. Descargar el instalador
-
-Descarga el archivo:
-
-**`instalar_COMUNDAW2.bat`**
-
-Guárdalo, por ejemplo, en el Escritorio.
-
----
-
-## 2. Ejecutar como administrador
-
-Este paso es importante.
-
-1. Busca `instalar_COMUNDAW2.bat`.
-2. Haz **clic derecho** sobre el archivo.
-3. Pulsa **"Ejecutar como administrador"**.
-4. Si Windows pregunta:
-
-   > "¿Quieres permitir que esta aplicación haga cambios en el dispositivo?"
-
-   Pulsa **"Sí"**.
-
-Se abrirá una ventana negra y comenzará la instalación automáticamente.
-
----
-
-## 3. Esperar a que termine
-
-El instalador hará todo lo necesario automáticamente:
-
-* Configurar el acceso a la carpeta compartida.
-* Guardar las credenciales necesarias.
-* Crear la unidad de red.
-* Configurar la conexión para que vuelva a funcionar al iniciar Windows.
-
-Al terminar debería aparecer un mensaje parecido a:
-
-```text
-LISTO. Unidad Z: montada y re-conectable en cada inicio.
-```
-
-Puedes pulsar una tecla para cerrar la ventana.
-
----
-
-## 4. ¿Dónde está la carpeta?
-
-Después de instalarla, abre el **Explorador de archivos** de Windows.
-
-En **"Este equipo"** debería aparecer una nueva unidad:
-
-**📁 Z:**
-
-Dentro encontrarás la carpeta común de DAW2.
-
-También puedes acceder directamente escribiendo esto en la barra de direcciones del Explorador:
+También puedes abrir el recurso directamente desde el Explorador:
 
 ```text
 \\192.168.2.21\comunDAW2
 ```
 
----
+El instalador guarda las credenciales necesarias, conecta `W:` y configura la reconexión al iniciar Windows. Si `W:` ya está asignada a este mismo recurso, actualiza esa conexión; si está ocupada por otro recurso, se detiene sin modificarla.
 
-## ❗ Si Windows muestra un error
+### Instalaciones anteriores y unidad Z:
 
-### "No se puede conectar con la carpeta"
+Una versión anterior del instalador podía asignar `comunDAW2` a `Z:`. Al actualizar, el instalador comprueba a qué recurso apunta `Z:` y solo la retira si coincide exactamente con `\\192.168.2.21\comunDAW2`. Si `Z:` corresponde a otra carpeta compartida —incluida una unidad asignada por el dominio—, la deja intacta. La nueva instalación utiliza `W:`.
 
-Comprueba primero que:
+Si Windows no puede comprobar la asignación antigua de `Z:`, la deja intacta y continúa. Si no puede comprobar `W:`, se detiene para evitar modificar una unidad ajena.
 
-1. Estás conectado a la red del aula.
-2. El servidor está encendido.
-3. Has ejecutado el instalador **como administrador**.
+Windows puede impedir dos conexiones al mismo servidor con credenciales distintas (error 1219). El instalador no desconecta recursos ajenos para intentar resolverlo. Si aparece ese error al iniciar sesión en el dominio, el administrador tendrá que proporcionar un nombre de servidor alternativo para `comunDAW2` o configurar credenciales compatibles.
 
-Si sigue sin funcionar, no cambies ninguna configuración de Windows por tu cuenta y avisa o toquetea bajo tu propio riesgo.
+## Linux
 
----
+1. Descarga `instalar_COMUNDAW2.sh`.
+2. Abre un terminal y ve a la carpeta donde lo guardaste. Por ejemplo:
 
-# 🐧 Linux
+   ```bash
+   cd ~/Descargas
+   ```
 
-## 1. Descargar el instalador
+3. Dale permiso de ejecución y ejecútalo:
 
-Descarga el archivo:
+   ```bash
+   chmod +x instalar_COMUNDAW2.sh
+   sudo ./instalar_COMUNDAW2.sh
+   ```
 
-**`instalar_COMUNDAW2.sh`**
+4. Escribe tu contraseña cuando la solicite. Mientras la escribes no aparecerán letras ni asteriscos; es normal.
+5. Espera al mensaje **Instalación completada**.
 
-Puedes guardarlo en la carpeta **Descargas**.
+La carpeta estará disponible en `/mnt/comunDAW2` y aparecerá en la barra lateral de Archivos. El instalador configura un servicio para montarla automáticamente al iniciar el ordenador. En Linux se usa un punto de montaje; no se asigna ni se modifica ninguna letra de unidad como `Z:`.
 
----
+## Volver a ejecutar el instalador
 
-## 2. Abrir un terminal
+No es necesario ejecutarlo cada vez que enciendas el ordenador. Si necesitas reparar o actualizar la instalación, puedes volver a ejecutar el instalador del sistema correspondiente:
 
-Abre la aplicación **Terminal** de Linux.
+- **Windows:** conserva `W:` si ya apunta a `comunDAW2`, actualiza la conexión y el acceso de inicio; solo elimina la antigua asignación `Z:` si apunta exactamente a este recurso. No elimina unidades que apunten a otras carpetas.
+- **Linux:** vuelve a configurar el mismo servicio, punto de montaje y marcador de Archivos, evitando duplicar el marcador.
 
-Normalmente puedes encontrarla buscando:
+## Si no funciona
 
-**Terminal**
+Comprueba que estás conectado a la red del aula y que el servidor está encendido. En Windows, ejecuta el instalador como administrador. En Linux, reinicia el ordenador para que el servicio vuelva a intentar la conexión.
 
-en el menú de aplicaciones.
+Si el problema continúa, informa al profesor del sistema operativo, de lo que estabas intentando hacer y del mensaje de error. No cambies por tu cuenta las unidades o configuraciones del dominio.
 
----
+## Uso de la carpeta compartida
 
-## 3. Ir a la carpeta donde está el instalador
-
-Si lo has descargado en **Descargas**, escribe:
-
-```bash
-cd ~/Descargas
-```
-
-y pulsa **Enter**.
-
----
-
-## 4. Dar permiso para ejecutar el instalador
-
-Escribe:
-
-```bash
-chmod +x instalar_COMUNDAW2.sh
-```
-
-y pulsa **Enter**.
-
-No debería aparecer ningún mensaje. Es normal.
-
-
-## 5. Ejecutar el instalador
-
-Ahora escribe:
-
-```bash
-sudo ./instalar_COMUNDAW2.sh
-```
-
-y pulsa **Enter**.
-
-Linux te pedirá tu contraseña.
-
-> 🔒 Cuando escribas la contraseña **no aparecerán letras ni asteriscos en pantalla**. Es normal. Escríbela igualmente y pulsa Enter.
-
----
-
-## 5. Esperar a que termine
-
-El instalador hará automáticamente todo lo necesario:
-
-* Instalar el soporte necesario para acceder a carpetas compartidas.
-* Crear la carpeta de conexión.
-* Configurar la conexión con el servidor.
-* Configurar la conexión automática al encender el ordenador.
-* Añadir `comunDAW2` a la barra lateral del explorador de archivos.
-
-Al final debería aparecer:
-
-```text
-======================================
- Instalación completada
-======================================
-```
-
-Si aparece ese mensaje, la instalación ha terminado correctamente.
-
----
-
-# 📂 ¿Dónde está la carpeta en Linux?
-
-Abre la aplicación **Archivos**.
-
-En la barra lateral del explorador de archivos debería aparecer:
-
-**📁 comunDAW2**
-
-Haz clic ahí para abrir la carpeta compartida.
-
-También puedes encontrarla directamente en:
-
-```text
-/mnt/comunDAW2
-```
-
----
-
-# 🔄 ¿Tengo que ejecutar el instalador cada vez?
-
-**No.**
-
-El instalador está pensado para ejecutarse **una sola vez por ordenador**.
-
-Después de instalarlo:
-
-* 🪟 Windows → la unidad **Z:** se volverá a conectar automáticamente.
-* 🐧 Linux → `comunDAW2` se montará automáticamente al iniciar el ordenador.
-
-Por tanto, **no vuelvas a ejecutar el instalador cada vez que enciendas el ordenador**.
-
----
-
-# 💾 ¿Qué puedo hacer con la carpeta?
-
-Puedes utilizar `comunDAW2` como una carpeta normal.
-
-Por ejemplo:
-
-* Crear carpetas.
-* Crear documentos.
-* Copiar archivos.
-* Abrir archivos.
-* Editar archivos.
-* Compartir archivos con otros compañeros.
-
-Ten en cuenta que **todo lo que guardes ahí está en la carpeta común**, por lo que los demás usuarios que tengan acceso podrán verlo.
-
----
-
-# ⚠️ Importante
-
-### No borres ni modifiques estos archivos
-
-En Linux, no borres ni modifiques archivos del sistema relacionados con la instalación.
-
-En Windows, no elimines la configuración de la unidad de red si quieres que siga conectándose automáticamente.
-
-### No guardes información privada
-
-La carpeta es **compartida entre los usuarios del aula**.
-
-No guardes ahí:
-
-* Contraseñas.
-* Documentos personales.
-* Información privada.
-* Archivos que no quieras que otros usuarios puedan ver o modificar.
-
----
-
-# 🆘 Si deja de funcionar
-
-Antes de pedir ayuda, comprueba:
-
-### 1. ¿Estás conectado a la red del aula?
-
-La conexión al servidor solo funciona si el ordenador puede comunicarse con él.
-
-### 2. ¿El servidor está encendido?
-
-Si el servidor está apagado, la carpeta no estará disponible.
-
-### 3. ¿Puedes acceder a Internet?
-
-Aunque Internet funcione, eso no garantiza que el servidor del aula sea accesible, pero sirve como primera comprobación de la conexión.
-
-### 4. Reinicia el ordenador
-
-En muchos casos, reiniciar permite que la conexión automática vuelva a establecerse correctamente.
-
-Si después de todo esto sigue sin funcionar, informa al profesor indicando:
-
-* Sistema operativo: **Windows / Linux**
-* Qué estabas intentando hacer.
-* Qué mensaje de error aparece.
-* Si la carpeta aparece o no.
-
----
-
-## ✅ Resumen rápido
-
-### Windows
-
-```text
-1. Descargar instalar_COMUNDAW2.bat
-2. Clic derecho → Ejecutar como administrador
-3. Pulsar "Sí"
-4. Esperar a que termine
-5. Abrir "Este equipo"
-6. Entrar en Z:
-```
-
-### Linux
-
-```text
-1. Descargar instalar_COMUNDAW2.sh
-2. Abrir Terminal
-3. cd ~/Descargas
-4. chmod +x instalar_COMUNDAW2.sh
-5. sudo ./instalar_COMUNDAW2.sh
-6. Escribir la contraseña
-7. Abrir "Archivos"
-8. Entrar en comunDAW2
-```
-
-**Una vez instalado, no es necesario repetir el proceso.**
+Puedes crear, copiar, abrir y editar archivos en `comunDAW2`. El contenido es compartido con otros usuarios del aula: no guardes contraseñas, documentos personales ni información privada, y no borres archivos que necesiten otras personas.

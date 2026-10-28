@@ -13,17 +13,52 @@ set COMPARTIDA=comunDAW2
 set PASSWORD=renaido
 set SERVER=192.168.2.21
 set RECURSO=\\%SERVER%\comunDAW2
-set UNIDAD=Z
+set UNIDAD=W
 
 echo.
 echo  Carpeta comun DAW2 - instalador
 echo  Recurso : %RECURSO%   Unidad : %UNIDAD%:
 echo.
 
-REM ---------- 0) Limpieza ----------
-echo [0/3] Limpiando mapeos y credenciales anteriores...
-net use %UNIDAD%: /delete >nul 2>&1
-cmdkey /delete:%SERVER% >nul 2>&1
+REM ---------- 0) Comprobar mapeos anteriores ----------
+echo [0/3] Comprobando mapeos anteriores...
+powershell -NoProfile -Command "if (-not (Get-Command Get-SmbMapping -ErrorAction SilentlyContinue)) { exit 3 }; try { $m = @(Get-SmbMapping -ErrorAction Stop | Where-Object { $_.LocalPath -ieq '%UNIDAD%:' }) } catch { exit 3 }; if ($m.Count -eq 0) { exit 1 }; if ($m[0].RemotePath -ieq '%RECURSO%') { exit 0 }; exit 2"
+if errorlevel 3 (
+    echo   [ERROR] No se pudo comprobar la unidad %UNIDAD%:. No se modifico ninguna unidad.
+    pause
+    exit /b 1
+)
+if errorlevel 2 (
+    echo   [ERROR] %UNIDAD%: ya esta asignada a otro recurso. No se modifico.
+    pause
+    exit /b 1
+)
+if not errorlevel 1 (
+    echo   [INFO] Actualizando el mapeo anterior de %UNIDAD%:...
+    net use %UNIDAD%: /delete /y >nul 2>&1
+    if errorlevel 1 (
+        echo   [ERROR] No se pudo retirar el mapeo anterior de %UNIDAD%:.
+        pause
+        exit /b 1
+    )
+)
+
+REM La version anterior usaba Z:. Solo se retira si apunta exactamente
+REM a este recurso; una unidad Z: del dominio u otro recurso queda intacta.
+powershell -NoProfile -Command "if (-not (Get-Command Get-SmbMapping -ErrorAction SilentlyContinue)) { exit 3 }; try { $m = @(Get-SmbMapping -ErrorAction Stop | Where-Object { $_.LocalPath -ieq 'Z:' }) } catch { exit 3 }; if ($m.Count -eq 0) { exit 1 }; if ($m[0].RemotePath -ieq '%RECURSO%') { exit 0 }; exit 2"
+if errorlevel 3 (
+    echo   [AVISO] No se pudo comprobar Z:. Se deja intacta.
+) else if not errorlevel 1 (
+    echo   [INFO] Z: apunta a la instalacion anterior de comunDAW2; retirandola...
+    net use Z: /delete /y >nul 2>&1
+    if errorlevel 1 (
+        echo   [ERROR] No se pudo retirar la instalacion anterior de Z:.
+        pause
+        exit /b 1
+    )
+) else (
+    echo   [INFO] Z: no corresponde a comunDAW2; se deja intacta.
+)
 
 REM ---------- 1) Credencial cifrada ----------
 echo [1/3] Guardando credencial de %COMPARTIDA%...
@@ -65,7 +100,6 @@ if exist "%INICIO%\Carpeta comun DAW2.cmd" (
 echo.
 echo  LISTO. Unidad %UNIDAD%: montada y re-conectable en cada inicio.
 echo  Para deshacer: net use %UNIDAD%: /delete
-echo                 cmdkey /delete:%SERVER%
 echo                 del "%INICIO%\Carpeta comun DAW2.cmd"
 echo.
 pause
